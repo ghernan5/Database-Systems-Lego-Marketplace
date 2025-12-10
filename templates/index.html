@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lego Marketplace</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <link rel="stylesheet" href="/static/css/output.css">
+</head>
+<body>
+    <div class="navbar bg-warning text-base-content shadow-md">
+        <div class="navbar-start">
+            <a href="{{ url_for('index') }}" class="btn btn-ghost text-xl font-bold">Lego Marketplace</a>
+        </div>
+        <div class="navbar-center"></div>
+        <div class="navbar-end">
+            {% if session.username %}
+                <span class="mr-4 text-sm font-semibold">Hello, {{ session.username }}</span>
+                <a href="cart.html" class="btn btn-ghost mr-2">Cart</a>
+                <a href="{{ url_for('logout') }}" class="btn btn-error">Logout</a>
+            {% else %}
+                <a href="{{ url_for('account') }}" class="btn">Account</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <main class="container mx-auto px-4 mt-8">
+        <!-- Flash Message Display Block -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }} shadow-lg mb-4">
+                <div>
+                  <!-- SVG icon omitted for brevity -->
+                  <span>{{ message }}</span>
+                </div>
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %} 
+
+        <!-- USER INVENTORY SECTION -->
+        <div class="flex justify-between items-center px-4 pt-4 pb-4">
+            <h1 class="text-xl font-bold">YOUR INVENTORY</h1>
+            <button class="btn btn-warning" onclick="add_piece_modal.showModal()">+ Add Item</button>
+            <a href="{{ url_for('wishlist') }}" class="btn btn-info mr-4">View Wishlist</a>
+        </div>
+
+        <div class="overflow-x-auto shadow-lg rounded-box">
+          {% if user_inventory %}
+          <table class="table w-full">
+            <thead>
+              <tr>
+                <th>Piece Name (ID)</th>
+                <th>Color</th>
+                <th>Quantity</th>
+                <th>Unit Price</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in user_inventory %}
+              <tr>
+                <td>
+                  <div class="flex items-center space-x-3">
+                    <div>
+                      <div class="font-bold">{{ item.piece.name }}</div>
+                      <div class="text-sm opacity-50">{{ item.piece_id }}</div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  {{ item.color.name }}
+                  <span class="badge badge-ghost badge-sm ml-2">
+                      {% if item.color.is_trans %}Transparent{% else %}Opaque{% endif %}
+                  </span>
+                </td>
+                <td>{{ item.quantity }}</td>
+                <td>${{ item.price }}</td>
+                <th>
+                  <button class="btn btn-ghost btn-xs">details</button>
+                </th>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% else %}
+          <div class="p-8 text-center text-gray-500">
+              You currently have no items in your inventory.
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- MARKET SECTION -->
+        <h1 class="text-xl font-bold p-4 mt-8 border-t">MARKET</h1>
+        <div class="overflow-x-auto shadow-lg rounded-box mb-8">
+          {% if market_inventory %}
+          <table class="table w-full">
+            <thead>
+              <tr>
+                <th>Piece Name (ID)</th>
+                <th>Color</th>
+                <th>Quantity</th>
+                <th>Unit Price</th>
+                <th>Seller</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in market_inventory %}
+              <tr>
+                <td>
+                  <div class="flex items-center space-x-3">
+                    <div>
+                      <div class="font-bold">{{ item.piece.name }}</div>
+                      <div class="text-sm opacity-50">{{ item.piece_id }}</div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  {{ item.color.name }}
+                  <span class="badge badge-ghost badge-sm ml-2">
+                      {% if item.color.is_trans %}Trans{% else %}Opaq{% endif %}
+                  </span>
+                </td>
+                <td>{{ item.quantity }}</td>
+                <td>${{ item.price }}</td>
+                <td>{{ item.user.name }}</td>
+                <th>
+                  <button class="btn btn-success btn-xs">Add to Cart</button>
+                </th>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% else %}
+          <div class="p-8 text-center text-gray-500">
+              The market is currently empty or only you are selling items.
+          </div>
+          {% endif %}
+        </div>
+    </main>
+    
+    <dialog id="add_piece_modal" class="modal">
+      <div class="modal-box">
+        <h3 class="font-bold text-lg">Add New Inventory Item</h3>
+        
+        <form method="POST" action="{{ url_for('add_inventory') }}" class="py-4">
+          {{ form.hidden_tag() }}
+            <div class="mb-4">
+                <label class="label">{{ form.piece_id.label }}</label>
+                {{ form.piece_id(class="select select-bordered w-full") }}
+            </div>
+            
+            <div class="mb-4">
+                <label class="label">{{ form.color_id.label }}</label>
+                {{ form.color_id(class="select select-bordered w-full") }}
+            </div>
+
+            <div class="mb-4">
+                <label class="label">{{ form.quantity.label }}</label>
+                {{ form.quantity(class="input input-bordered w-full", min=1) }}
+            </div>
+            
+            <div class="mb-4">
+                <label class="label">{{ form.price.label }}</label>
+                {{ form.price(class="input input-bordered w-full", step="0.01", min=0.01) }}
+            </div>
+
+            <div class="modal-action">
+                {{ form.submit(class="btn btn-warning") }}
+                <button type="button" class="btn" onclick="document.getElementById('add_piece_modal').close()">Close</button>
+            </div>
+        </form>
+      </div>
+    </dialog>
+
+</body>
+</html>

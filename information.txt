@@ -1,0 +1,2 @@
+to start tailwin CLI: ./tailwindcss -i input.css -o static/css/output.css --watch
+to start local client: python app.py

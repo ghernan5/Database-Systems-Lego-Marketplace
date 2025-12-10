@@ -1,0 +1,5 @@
+@import "tailwindcss";
+/* This is the correct standard way to load the plugin for the CLI */
+@plugin "./daisyui.mjs" {
+  /* You can put your themes configuration here if needed, e.g. themes: [...] */
+}

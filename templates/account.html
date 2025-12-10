@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LM Account</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <!-- Ensure this links to your generated output.css -->
+    <link rel="stylesheet" href="/static/css/output.css">
+    <!-- REMOVED: <script src="https://cdn.tailwindcss.com"></script> -->
+</head>
+<body>
+    <div class="navbar bg-warning text-base-content shadow-md">
+        <div class="navbar-start">
+            <a href="{{ url_for('index') }}" class="btn btn-ghost text-xl font-bold">
+                Lego Marketplace
+            </a>
+        </div>
+        <div class="navbar-center">
+            <b>Hello, User Name!</b>
+        </div>
+        <div class="navbar-end">
+        </div>
+
+    </div>
+
+    <main class="container mx-auto px-4 mt-8">
+        <h1 class="text-4xl font-bold text-center my-8">Account</h1>
+        <p class="text-center">This is where your information will be stored!</p>
+    </main>
+
+</body>
+</html>

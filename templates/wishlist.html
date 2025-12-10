@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Wishlist - Lego Marketplace</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <link rel="stylesheet" href="/static/css/output.css"> 
+</head>
+<body>
+    <div class="navbar bg-warning text-base-content shadow-md">
+        <div class="navbar-start">
+            <a href="{{ url_for('index') }}" class="btn btn-ghost text-xl font-bold">Lego Marketplace</a>
+        </div>
+        <div class="navbar-center"></div>
+        <div class="navbar-end">
+            {% if session.username %}
+                <span class="mr-4 text-sm font-semibold">Hello, {{ session.username }}</span>
+                <a href="cart.html" class="btn btn-ghost mr-2">Cart</a>
+                <a href="{{ url_for('logout') }}" class="btn btn-error">Logout</a>
+            {% else %}
+                <a href="{{ url_for('account') }}" class="btn">Account</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <main class="container mx-auto px-4 mt-8">
+        <div class="flex justify-between items-center px-4 pt-4 pb-4">
+            <h1 class="text-xl font-bold">Your Wishlists</h1>
+            <a href="{{ url_for('index') }}" class="btn btn-ghost">Back to Inventory</a>
+        </div>
+
+        {% if wishlists %}
+            {% for list in wishlists %}
+                <div class="mb-8 p-6 shadow-lg rounded-box bg-base-100 border border-base-200">
+                    <h2 class="text-2xl font-semibold mb-4 text-primary">{{ list.name }} 
+                       <span class="text-sm text-gray-500">({{ list.items|length }} items)</span>
+                    </h2>
+
+                    {% if list.items %}
+                    <div class="overflow-x-auto">
+                        <table class="table w-full">
+                            <thead>
+                                <tr>
+                                    <th>Piece Name (ID)</th>
+                                    <th>Color</th>
+                                    <th>Quantity Needed</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in list.items %}
+                                <tr>
+                                    <td>
+                                        <div class="font-bold">{{ item.piece.name }}</div>
+                                        <div class="text-sm opacity-50">{{ item.piece_id }}</div>
+                                    </td>
+                                    <td>
+                                        {{ item.color.name }}
+                                        <span class="badge badge-ghost badge-sm ml-2">
+                                            {% if item.color.is_trans %}Transparent{% else %}Opaque{% endif %}
+                                        </span>
+                                    </td>
+                                    <td>{{ item.quantity }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                        <p class="p-4 text-gray-500 italic">This wishlist is currently empty.</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+        {% else %}
+            <!-- What to display if the user has NO wishlists at all -->
+            <div class="p-8 text-center text-gray-500 shadow-lg rounded-box bg-base-100">
+                <p class="text-lg">You have no wishlists set up yet.</p>
+                <a href="{{ url_for('index') }}" class="btn btn-warning mt-4">Go back to add inventory or explore the market</a>
+            </div>
+        {% endif %}
+    </main>
+</body>
+</html>
